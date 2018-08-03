@@ -3,6 +3,7 @@ package com.mb.duoying;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.webkit.WebSettings;
@@ -10,15 +11,20 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class MainActivity extends AppCompatActivity {
     private WebView webView;
-    private String myUrl = "https://www.dy866.com";
+    private String myUrl = "https://www.baidu.com/";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         webView = (WebView) findViewById(R.id.webview);
-        webView.loadUrl(myUrl);//加载url
+        Map<String, String > map = new HashMap<>() ;
+        map.put("rbody" , "" ) ;
+        webView.loadUrl(myUrl,map);//加载url
         webView.setWebViewClient(webViewClient);
         WebSettings webSettings=webView.getSettings();
         webSettings.setJavaScriptEnabled(true);//允许使用js
@@ -37,13 +43,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            Log.i("ansen","拦截url:"+url);
-            if(url.equals("http://www.google.com/")){
-                Toast.makeText(MainActivity.this,"国内不能访问google,拦截该url",Toast.LENGTH_LONG).show();
-                return true;//表示我已经处理过了
+        public boolean shouldOverrideUrlLoading(WebView webView, String url) {
+            if (TextUtils.isEmpty(url)){
+                return true;
             }
-            return super.shouldOverrideUrlLoading(view, url);
+            return super.shouldOverrideUrlLoading(webView, url);
         }
 
     };
@@ -52,11 +56,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //释放资源
         webView.destroy();
         webView = null;
     }
 
+    // region 双击返回
+    private static final long DOUBLE_CLICK_INTERVAL = 2000;
+    private long mLastClickTimeMills = 0;
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_BACK) ) {
@@ -64,6 +70,11 @@ public class MainActivity extends AppCompatActivity {
                 webView.goBack(); //goBack()表示返回WebView的上一页面
                 return true;
             }else {
+                if (System.currentTimeMillis() - mLastClickTimeMills > DOUBLE_CLICK_INTERVAL) {
+                    Toast.makeText(MainActivity.this,"再按一次返回退出",Toast.LENGTH_SHORT).show();
+                    mLastClickTimeMills = System.currentTimeMillis();
+                    return true;
+                }
                 finish();
                 return true;
             }
