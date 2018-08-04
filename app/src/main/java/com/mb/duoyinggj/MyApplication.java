@@ -1,4 +1,4 @@
-package com.mb.duoying;
+package com.mb.duoyinggj;
 
 import android.app.Application;
 import android.content.Context;
@@ -15,7 +15,7 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         mContext = this;// 初始化
-        AVOSCloud.initialize(this,"ytXG1WjAwPsNSUvj27XoPpnE-gzGzoHsz", "MymJLa9fEM9LOqcsUNH7H8vc");
+        AVOSCloud.initialize(this,"DAJ6LM2UjvnAeGEhi192NVpB-gzGzoHsz", "DDJoIhFCd23xRiT25TDa8In8");
         AVOSCloud.setDebugLogEnabled(true);
         AVAnalytics.enableCrashReport(this, true);
     }
